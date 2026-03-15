@@ -188,5 +188,37 @@ select to_char(a.timestamp_0, 'YYYY-MM-DD HH24:MI:SS')     as timestamp_0,
 from   a
 /
 
+select to_char(a.timestamp_0, 'YYYY-MM-DD HH24:MI:SS')     as timestamp_0,
+       to_char(a.timestamp_1, 'YYYY-MM-DD HH24:MI:SS.FF1') as timestamp_1,
+       to_char(a.timestamp_2, 'YYYY-MM-DD HH24:MI:SS.FF2') as timestamp_2,
+       to_char(a.timestamp_3, 'YYYY-MM-DD HH24:MI:SS.FF3') as timestamp_3,
+       to_char(a.timestamp_4, 'YYYY-MM-DD HH24:MI:SS.FF4') as timestamp_4,
+       to_char(a.timestamp_5, 'YYYY-MM-DD HH24:MI:SS.FF5') as timestamp_5,
+       to_char(a.timestamp_6, 'YYYY-MM-DD HH24:MI:SS.FF6') as timestamp_6,
+       to_char(a.timestamp_7, 'YYYY-MM-DD HH24:MI:SS.FF7') as timestamp_7,
+       to_char(a.timestamp_8, 'YYYY-MM-DD HH24:MI:SS.FF8') as timestamp_8,
+       to_char(a.timestamp_9, 'YYYY-MM-DD HH24:MI:SS.FF9') as timestamp_9
+from   a
+/
+
 commit
+/
+
+SELECT column_name, formatted_value
+FROM (
+  SELECT TO_CHAR(a.timestamp_0, 'YYYY-MM-DD HH24:MI:SS')     AS timestamp_0,
+         TO_CHAR(a.timestamp_1, 'YYYY-MM-DD HH24:MI:SS.FF1') AS timestamp_1,
+         TO_CHAR(a.timestamp_2, 'YYYY-MM-DD HH24:MI:SS.FF2') AS timestamp_2,
+         TO_CHAR(a.timestamp_3, 'YYYY-MM-DD HH24:MI:SS.FF3') AS timestamp_3,
+         TO_CHAR(a.timestamp_4, 'YYYY-MM-DD HH24:MI:SS.FF4') AS timestamp_4,
+         TO_CHAR(a.timestamp_5, 'YYYY-MM-DD HH24:MI:SS.FF5') AS timestamp_5,
+         TO_CHAR(a.timestamp_6, 'YYYY-MM-DD HH24:MI:SS.FF6') AS timestamp_6,
+         TO_CHAR(a.timestamp_7, 'YYYY-MM-DD HH24:MI:SS.FF7') AS timestamp_7,
+         TO_CHAR(a.timestamp_8, 'YYYY-MM-DD HH24:MI:SS.FF8') AS timestamp_8,
+         TO_CHAR(a.timestamp_9, 'YYYY-MM-DD HH24:MI:SS.FF9') AS timestamp_9
+  FROM   a
+)
+UNPIVOT (
+  formatted_value FOR column_name IN (timestamp_0, timestamp_1, timestamp_2, timestamp_3, timestamp_4, timestamp_5, timestamp_6, timestamp_7, timestamp_8, timestamp_9)
+)
 /
