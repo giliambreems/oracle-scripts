@@ -64,6 +64,17 @@ SELECT 'TIMESTAMP(8)', TO_TIMESTAMP('2023-01-01 12:00:00.12345678', 'YYYY-MM-DD 
 SELECT 'TIMESTAMP(9)', TO_TIMESTAMP('2023-01-01 12:00:00.123456789', 'YYYY-MM-DD HH24:MI:SS.FF9') from dual
 /
 
+-----------------------
+--
+-- TIMESTAMP
+--
+-- 1) Setup
+--
+-----------------------
+
+ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'DD-MM-YYYY HH24:MI:SSXFF'
+/
+
 drop table a
 /
 
@@ -80,6 +91,14 @@ create table a (
   timestamp_9 timestamp(9)
 )
 /
+
+-----------------------
+--
+-- TIMESTAMP
+--
+-- 2a) Insert data
+--
+-----------------------
 
 INSERT INTO a (
   timestamp_0,
@@ -106,35 +125,13 @@ INSERT INTO a (
 )
 /
 
-ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'DD-MM-YYYY HH24:MI:SSXFF'
-/
-
--- THIS ONE GOES WRONG AS OF TIMESTAMP(4) !!!
-INSERT INTO a (
-  timestamp_0,
-  timestamp_1,
-  timestamp_2,
-  timestamp_3,
-  timestamp_4,
-  timestamp_5,
-  timestamp_6,
-  timestamp_7,
-  timestamp_8,
-  timestamp_9
-) VALUES (
-  TIMESTAMP '2023-01-01 12:00:00',
-  TIMESTAMP '2023-01-01 12:00:00.123',
-  TIMESTAMP '2023-01-01 12:00:00.123',
-  TIMESTAMP '2023-01-01 12:00:00.123',
-  TIMESTAMP '2023-01-01 12:00:00.123456',
-  TIMESTAMP '2023-01-01 12:00:00.123456',
-  TIMESTAMP '2023-01-01 12:00:00.123456',
-  TIMESTAMP '2023-01-01 12:00:00.123456789',
-  TIMESTAMP '2023-01-01 12:00:00.123456789',
-  TIMESTAMP '2023-01-01 12:00:00.123456789'
-)
-/
-
+-----------------------
+--
+-- TIMESTAMP
+--
+-- 2b) Insert data
+--
+-----------------------
 
 INSERT INTO a (
   timestamp_0,
@@ -161,7 +158,56 @@ select
   TIMESTAMP '2023-01-01 12:00:00.123456789'
 from dual
 /
-  
+
+------------------------
+--
+-- TIMESTAMP
+--
+-- 2c) Insert data
+--
+-----------------------
+
+-
+-- THIS ONE GOES WRONG AS OF TIMESTAMP(4) !!!
+--
+INSERT INTO a (
+  timestamp_0,
+  timestamp_1,
+  timestamp_2,
+  timestamp_3,
+  timestamp_4,
+  timestamp_5,
+  timestamp_6,
+  timestamp_7,
+  timestamp_8,
+  timestamp_9
+) VALUES (
+  TIMESTAMP '2023-01-01 12:00:00',
+  TIMESTAMP '2023-01-01 12:00:00.123',
+  TIMESTAMP '2023-01-01 12:00:00.123',
+  TIMESTAMP '2023-01-01 12:00:00.123',
+  TIMESTAMP '2023-01-01 12:00:00.123456',
+  TIMESTAMP '2023-01-01 12:00:00.123456',
+  TIMESTAMP '2023-01-01 12:00:00.123456',
+  TIMESTAMP '2023-01-01 12:00:00.123456789',
+  TIMESTAMP '2023-01-01 12:00:00.123456789',
+  TIMESTAMP '2023-01-01 12:00:00.123456789'
+)
+/
+
+
+
+commit
+/
+
+
+-----------------------
+--
+-- TIMESTAMP
+--
+-- 3) Query the data
+--
+-----------------------
 select timestamp_0,
        timestamp_1,
        timestamp_2,
@@ -186,9 +232,6 @@ select to_char(a.timestamp_0, 'YYYY-MM-DD HH24:MI:SS')     as timestamp_0,
        to_char(a.timestamp_8, 'YYYY-MM-DD HH24:MI:SS.FF9') as timestamp_8,
        to_char(a.timestamp_9, 'YYYY-MM-DD HH24:MI:SS.FF9') as timestamp_9
 from   a
-/
-
-commit
 /
 
 SELECT column_name, formatted_value
