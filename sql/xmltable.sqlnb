@@ -1,0 +1,1257 @@
+cells:
+  - kind: 2
+    value: "WITH\r
+
+      \  t_message as (\r
+
+      \      select '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r
+
+      <LALLNotificationEnvelope
+      xmlns=\"urn:nedu:edsn:data:lallnotification:1:standard\">\r
+
+      \  <EDSNBusinessDocumentHeader>\r
+
+      \    <CreationTimestamp>2025-01-13T11:55:38Z</CreationTimestamp>\r
+
+      \    <MessageID>CARM12345678</MessageID>\r
+
+      \    <Destination>\r
+
+      \      <Receiver>\r
+
+      \        <Authority/>\r
+
+      \        <ContactTypeIdentifier/>\r
+
+      \        <ReceiverID>8712345678901</ReceiverID>\r
+
+      \      </Receiver>\r
+
+      \      <Service>\r
+
+      \        <ServiceMethod/>\r
+
+      \        <ServiceName/>\r
+
+      \      </Service>\r
+
+      \    </Destination>\r
+
+      \    <Source>\r
+
+      \      <Authority/>\r
+
+      \      <ContactTypeIdentifier/>\r
+
+      \      <SenderID>8712345000003</SenderID>\r
+
+      \    </Source>\r
+
+      \  </EDSNBusinessDocumentHeader>\r
+
+      </LALLNotificationEnvelope>' as xml\r
+
+      \      from dual\r
+
+      \    )\r
+
+      select s.*\r
+
+      from   t_message t,\r
+
+      \        xmltable\r
+
+      \          ( xmlnamespaces( default
+      'urn:nedu:edsn:data:lallnotification:1:standard'),\r
+
+      \            '/LALLNotificationEnvelope/EDSNBusinessDocumentHeader'\r
+
+      \            passing xmltype(t.xml)\r
+
+      \            columns\r
+
+      \              creationtimestamp  varchar2(256) path
+      'CreationTimestamp',\r
+
+      \              message_id         varchar2(100) path 'MessageID',\r
+
+      \              receiver_id        varchar2(100) path
+      'Destination/Receiver/ReceiverID',\r
+
+      \              sender_id          varchar2(100) path 'Source/SenderID'\r
+
+      \          ) s\r\n"
+    languageId: oracle-sql
+  - kind: 2
+    value: "WITH\r
+
+      \  t_message as (\r
+
+      \      select '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r
+
+      <BALLNotificationEnvelope
+      xmlns=\"urn:nedu:edsn:data:ballnotification:1:standard\">\r
+
+      \  <EDSNBusinessDocumentHeader>\r
+
+      \    <CreationTimestamp>2025-01-13T11:55:38Z</CreationTimestamp>\r
+
+      \    <MessageID>CARM12345678</MessageID>\r
+
+      \    <Destination>\r
+
+      \      <Receiver>\r
+
+      \        <Authority/>\r
+
+      \        <ContactTypeIdentifier/>\r
+
+      \        <ReceiverID>8712345678901</ReceiverID>\r
+
+      \      </Receiver>\r
+
+      \      <Service>\r
+
+      \        <ServiceMethod/>\r
+
+      \        <ServiceName/>\r
+
+      \      </Service>\r
+
+      \    </Destination>\r
+
+      \    <Source>\r
+
+      \      <Authority/>\r
+
+      \      <ContactTypeIdentifier/>\r
+
+      \      <SenderID>8712345000003</SenderID>\r
+
+      \    </Source>\r
+
+      \  </EDSNBusinessDocumentHeader>\r
+
+      </BALLNotificationEnvelope>' as xml\r
+
+      \      from dual\r
+
+      \    )\r
+
+      select xmlcast(\r
+
+      \         xmlquery( 'local-name(/*)'  -- local-name of the root-element\r
+
+      \                   passing xmltype( t.xml )\r
+
+      \                   returning content\r
+
+      \                 ) as varchar2(200)\r
+
+      \       )  -- as root_element_name\r
+
+      from t_message t;"
+    languageId: oracle-sql
+  - kind: 2
+    value: "WITH\r
+
+      \  t_message as (\r
+
+      \      select gmp.gmp_document as xml\r
+
+      \      from   gdx_Data.gmp_gdx_message_payload gmp\r
+
+      \      where  gmp.gmp_gme_id = 1\r
+
+      \    )\r
+
+      select xmlcast(\r
+
+      \         xmlquery( 'local-name(/*)'  -- local-name of the root-element\r
+
+      \                   passing t.xml\r
+
+      \                   returning content\r
+
+      \                 ) as varchar2(200)\r
+
+      \       )  -- as root_element_name\r
+
+      from t_message t;"
+    languageId: oracle-sql
+  - kind: 2
+    value: "WITH\r
+
+      \  t_message as (\r
+
+      \      select gmp.gmp_document as xml\r
+
+      \      from   gdx_Data.gmp_gdx_message_payload gmp\r
+
+      \      where  gmp.gmp_gme_id = 1\r
+
+      \    )\r
+
+      select s.*\r
+
+      from   t_message t,\r
+
+      \        xmltable\r
+
+      \          ( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \            '/BALLNotificationEnvelope/EDSNBusinessDocumentHeader'\r
+
+      \            passing t.xml\r
+
+      \            columns\r
+
+      \              creationtimestamp  varchar2(256) path
+      'CreationTimestamp',\r
+
+      \              message_id         varchar2(100) path 'MessageID',\r
+
+      \              receiver_id        varchar2(100) path
+      'Destination/Receiver/ReceiverID',\r
+
+      \              sender_id          varchar2(100) path 'Source/SenderID'\r
+
+      \          ) s\r\n"
+    languageId: oracle-sql
+  - kind: 1
+    value: ""
+    languageId: markdown
+  - kind: 2
+    value: "WITH\r
+
+      \  t_message as (\r
+
+      \      select gmp.gmp_document as xml\r
+
+      \      from   gdx_Data.gmp_gdx_message_payload gmp\r
+
+      \      where  gmp.gmp_id = 1\r
+
+      \    )\r
+
+      select\r
+
+      \      d.document_type,\r
+
+      \r
+
+      \      -- Header\r
+
+      \      h.creation_timestamp,\r
+
+      \      h.message_id,\r
+
+      \      h.receiver_ean_id,\r
+
+      \      h.sender_ean_id,\r
+
+      \r
+
+      \      -- Process / connection level\r
+
+      \      p.document_version,\r
+
+      \      c.ean_id,\r
+
+      \      mp.shipper_ean_id,\r
+
+      \r
+
+      \      -- Allocation Property Set level\r
+
+      \      aps.fallback,\r
+
+      \      aps.measure_method,\r
+
+      \      aps.category,\r
+
+      \r
+
+      \      -- Allocation level\r
+
+      \      a.valid_from,\r
+
+      \      a.valid_to,\r
+
+      \      a.quantity,\r
+
+      \      a.is_reliable,\r
+
+      \      a.hs\r
+
+      \r
+
+      \r
+
+      from   t_message t\r
+
+      \r
+
+      \  -- Identify document type (LALL / BALL / ...)\r
+
+      \  CROSS JOIN XMLTABLE(\r
+
+      \    'local-name(/*)'\r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      document_type VARCHAR2(50) PATH '.'\r
+
+      \  ) d\r
+
+      \r
+
+      \  -- Common header (1 row)\r
+
+      \  CROSS JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/BALLNotificationEnvelope/EDSNBusinessDocumentHeader'\r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      creation_timestamp TIMESTAMP WITH TIME ZONE PATH
+      'CreationTimestamp',\r
+
+      \      message_id         VARCHAR2(50) PATH 'MessageID',\r
+
+      \      receiver_ean_id    VARCHAR2(20) PATH
+      'Destination/Receiver/ReceiverID',\r
+
+      \      sender_ean_id      VARCHAR2(20) PATH 'Source/SenderID'\r
+
+      \  ) h\r
+
+      \r
+
+      \  -- Wholesale process (0 or 1 row)\r
+
+      \  LEFT JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/BALLNotificationEnvelope/Wholesale_Content/Wholesale_Process'\r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      document_version NUMBER PATH 'Version'\r
+
+      \  ) p\r
+
+      \  ON 1 = 1\r
+
+      \r
+
+      \  -- Connection (0 or 1 row)\r
+
+      \  LEFT JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/BALLNotificationEnvelope/Wholesale_Content/Connection'\r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      ean_id VARCHAR2(20) PATH 'EANID'\r
+
+      \  ) c\r
+
+      \  ON 1 = 1\r
+
+      \r
+
+      \  -- Market party (0 or 1 row)\r
+
+      \  LEFT JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/BALLNotificationEnvelope/Wholesale_Content/Connection/MarketParty'\
+      \r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      shipper_ean_id VARCHAR2(20) PATH 'Shipper'\r
+
+      \  ) mp\r
+
+      \  ON 1 = 1\r
+
+      \r
+
+      \  -- Allocation Property Set (N rows)\r
+
+      \  LEFT JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/BALLNotificationEnvelope/Wholesale_Content/Connection/MarketParty/\
+      AllocationPropertySet'\r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      fallback          CHAR(1)   PATH 'Fallback',\r
+
+      \      measure_method    CHAR(1)   PATH 'MeasureMethod',\r
+
+      \      category          CHAR(3)   PATH 'UserCategory'\r
+
+      \  ) as aps\r
+
+      \  ON 1 = 1\r
+
+      \r
+
+      \  -- Allocation (N rows)\r
+
+      \  LEFT JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/BALLNotificationEnvelope/Wholesale_Content/Connection/MarketParty/\
+      AllocationPropertySet/Allocation'\r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      valid_from  TIMESTAMP WITH TIME ZONE PATH 'ValidFrom',\r
+
+      \      valid_to    TIMESTAMP WITH TIME ZONE PATH 'ValidTo',\r
+
+      \      quantity    NUMBER                   PATH 'Quantity',\r
+
+      \      is_reliable CHAR(1)                  PATH 'IsReliable',\r
+
+      \      hs          NUMBER                   PATH 'Hs',\r
+
+      \      status      CHAR(3)                  PATH 'Status'\r
+
+      \  ) a\r
+
+      \  ON 1 = 1\r
+
+      \r\n"
+    languageId: oracle-sql
+  - kind: 1
+    value: ""
+    languageId: markdown
+  - kind: 2
+    value: "WITH\r
+
+      \  t_message as (\r
+
+      \      select gmp.gmp_document as xml\r
+
+      \      from   gdx_Data.gmp_gdx_message_payload gmp\r
+
+      \      where  gmp.gmp_id = 1\r
+
+      \    )\r
+
+      select\r
+
+      \      d.document_type,\r
+
+      \r
+
+      \      -- Header\r
+
+      \      h.creation_timestamp,\r
+
+      \      h.message_id,\r
+
+      \      h.receiver_ean_id,\r
+
+      \      h.sender_ean_id,\r
+
+      \r
+
+      \      -- Process / connection level\r
+
+      \      p.document_version,\r
+
+      \      c.ean_id,\r
+
+      \      mp.shipper_ean_id,\r
+
+      \r
+
+      \      -- Rest Allocation level\r
+
+      \      a.gas_year_month,\r
+
+      \      a.quantity,\r
+
+      \      a.hs\r
+
+      \r
+
+      from   t_message t\r
+
+      \r
+
+      \  -- Identify document type (LALL / BALL / ...)\r
+
+      \  CROSS JOIN XMLTABLE(\r
+
+      \    'local-name(/*)'\r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      document_type VARCHAR2(50) PATH '.'\r
+
+      \  ) d\r
+
+      \r
+
+      \  -- Common header (1 row)\r
+
+      \  CROSS JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/BALLNotificationEnvelope/EDSNBusinessDocumentHeader'\r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      creation_timestamp TIMESTAMP WITH TIME ZONE PATH
+      'CreationTimestamp',\r
+
+      \      message_id         VARCHAR2(50) PATH 'MessageID',\r
+
+      \      receiver_ean_id    VARCHAR2(20) PATH
+      'Destination/Receiver/ReceiverID',\r
+
+      \      sender_ean_id      VARCHAR2(20) PATH 'Source/SenderID'\r
+
+      \  ) h\r
+
+      \r
+
+      \  -- Wholesale process (0 or 1 row)\r
+
+      \  LEFT JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/BALLNotificationEnvelope/Wholesale_Content/Wholesale_Process'\r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      document_version NUMBER PATH 'Version'\r
+
+      \  ) p\r
+
+      \  ON 1 = 1\r
+
+      \r
+
+      \  -- Connection (0 or 1 row)\r
+
+      \  LEFT JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/BALLNotificationEnvelope/Wholesale_Content/Connection'\r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      ean_id VARCHAR2(20) PATH 'EANID'\r
+
+      \  ) c\r
+
+      \  ON 1 = 1\r
+
+      \r
+
+      \  -- Market party (0 or 1 row)\r
+
+      \  LEFT JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/BALLNotificationEnvelope/Wholesale_Content/Connection/MarketParty'\
+      \r
+
+      \    PASSING t.xml\r
+
+      \    COLUMNS\r
+
+      \      shipper_ean_id VARCHAR2(20) PATH 'Shipper',\r
+
+      \      xml XMLTYPE PATH '.'\r
+
+      \  ) mp\r
+
+      \  ON 1 = 1\r
+
+      \r
+
+      \  -- Rest Allocation (0 or 1 row)\r
+
+      \  LEFT JOIN XMLTABLE( xmlnamespaces( default
+      'urn:nedu:edsn:data:ballnotification:1:standard'),\r
+
+      \    '/MarketParty/RestAllocation'\r
+
+      \    PASSING mp.xml\r
+
+      \    COLUMNS\r
+
+      \      gas_year_month  VARCHAR2(6)    PATH 'GasMonth',\r
+
+      \      quantity        NUMBER         PATH 'Quantity',\r
+
+      \      hs              VARCHAR2(10)   PATH 'Hs'\r
+
+      \  ) a\r
+
+      \  ON 1 = 1\r\n"
+    languageId: oracle-sql
+  - kind: 1
+    value: ""
+    languageId: markdown
+  - kind: 2
+    value: "WITH doc AS (\r
+
+      \  SELECT\r
+
+      \    d.payload,\r
+
+      \    XMLCAST(\r
+
+      \      XMLQUERY('local-name(/*)' PASSING d.payload RETURNING CONTENT)\r
+
+      \      AS VARCHAR2(50)\r
+
+      \    ) AS document_type\r
+
+      \  FROM xml_data d\r
+
+      ),\r
+
+      \r
+
+      header AS (\r
+
+      \  SELECT\r
+
+      \    d.payload,\r
+
+      \    h.*\r
+
+      \  FROM doc d\r
+
+      \  CROSS JOIN XMLTABLE(\r
+
+      \    XMLNAMESPACES(\r
+
+      \      DEFAULT 'urn:nedu:edsn:data:ballnotification:1:standard'\r
+
+      \    ),\r
+
+      \    '/BALLNotificationEnvelope/EDSNBusinessDocumentHeader'\r
+
+      \    PASSING d.payload\r
+
+      \    COLUMNS\r
+
+      \      creation_timestamp TIMESTAMP WITH TIME ZONE PATH
+      'CreationTimestamp',\r
+
+      \      message_id          VARCHAR2(50) PATH 'MessageID',\r
+
+      \      receiver_id         VARCHAR2(20) PATH
+      'Destination/Receiver/ReceiverID',\r
+
+      \      sender_id           VARCHAR2(20) PATH 'Source/SenderID'\r
+
+      \  ) h\r
+
+      ),\r
+
+      \r
+
+      process AS (\r
+
+      \  SELECT\r
+
+      \    d.payload,\r
+
+      \    p.version\r
+
+      \  FROM doc d\r
+
+      \  LEFT JOIN XMLTABLE(\r
+
+      \    XMLNAMESPACES(\r
+
+      \      DEFAULT 'urn:nedu:edsn:data:ballnotification:1:standard'\r
+
+      \    ),\r
+
+      \    '/BALLNotificationEnvelope/Wholesale_Content/Wholesale_Process'\r
+
+      \    PASSING d.payload\r
+
+      \    COLUMNS\r
+
+      \      version NUMBER PATH 'Version'\r
+
+      \  ) p ON 1 = 1\r
+
+      ),\r
+
+      \r
+
+      connection AS (\r
+
+      \  SELECT\r
+
+      \    d.payload,\r
+
+      \    c.ean_id             AS connection_ean,\r
+
+      \    c.networkpoint_ean   AS networkpoint_ean\r
+
+      \  FROM doc d\r
+
+      \  CROSS JOIN XMLTABLE(\r
+
+      \    XMLNAMESPACES(\r
+
+      \      DEFAULT 'urn:nedu:edsn:data:ballnotification:1:standard'\r
+
+      \    ),\r
+
+      \    '/BALLNotificationEnvelope/Wholesale_Content/Connection'\r
+
+      \    PASSING d.payload\r
+
+      \    COLUMNS\r
+
+      \      ean_id           VARCHAR2(20) PATH 'EANID',\r
+
+      \      networkpoint_ean VARCHAR2(20) PATH 'Wholesale_NetworkPoint/EANID'\r
+
+      \  ) c\r
+
+      ),\r
+
+      \r
+
+      market_party AS (\r
+
+      \  SELECT\r
+
+      \    c.payload,\r
+
+      \    c.connection_ean,\r
+
+      \    c.networkpoint_ean,\r
+
+      \    m.shipper\r
+
+      \  FROM connection c\r
+
+      \  CROSS JOIN XMLTABLE(\r
+
+      \    XMLNAMESPACES(\r
+
+      \      DEFAULT 'urn:nedu:edsn:data:ballnotification:1:standard'\r
+
+      \    ),\r
+
+      \    'MarketParty'\r
+
+      \    PASSING XMLTYPE(\r
+
+      \      XMLQUERY(\r
+
+      \        '/BALLNotificationEnvelope/Wholesale_Content/Connection[EANID=$e\
+      an]'\r
+
+      \        PASSING c.payload,\r
+
+      \                c.connection_ean AS \"ean\"\r
+
+      \        RETURNING CONTENT\r
+
+      \      )\r
+
+      \    )\r
+
+      \    COLUMNS\r
+
+      \      shipper VARCHAR2(20) PATH 'Shipper'\r
+
+      \  ) m\r
+
+      ),\r
+
+      \r
+
+      aps AS (\r
+
+      \  SELECT\r
+
+      \    m.payload,\r
+
+      \    m.connection_ean,\r
+
+      \    m.networkpoint_ean,\r
+
+      \    m.shipper,\r
+
+      \    a.fallback,\r
+
+      \    a.measure_method,\r
+
+      \    a.user_category\r
+
+      \  FROM market_party m\r
+
+      \  CROSS JOIN XMLTABLE(\r
+
+      \    XMLNAMESPACES(\r
+
+      \      DEFAULT 'urn:nedu:edsn:data:ballnotification:1:standard'\r
+
+      \    ),\r
+
+      \    'AllocationPropertySet'\r
+
+      \    PASSING XMLTYPE(\r
+
+      \      XMLQUERY(\r
+
+      \        '/BALLNotificationEnvelope/Wholesale_Content/Connection[EANID=$e\
+      an]\r
+
+      \         /MarketParty[Shipper=$shipper]'\r
+
+      \        PASSING m.payload,\r
+
+      \                m.connection_ean AS \"ean\",\r
+
+      \                m.shipper AS \"shipper\"\r
+
+      \        RETURNING CONTENT\r
+
+      \      )\r
+
+      \    )\r
+
+      \    COLUMNS\r
+
+      \      fallback        CHAR(1)     PATH 'Fallback',\r
+
+      \      measure_method  CHAR(1)     PATH 'MeasureMethod',\r
+
+      \      user_category   VARCHAR2(10) PATH 'UserCategory'\r
+
+      \  ) a\r
+
+      ),\r
+
+      \r
+
+      allocation AS (\r
+
+      \  SELECT\r
+
+      \    a.connection_ean,\r
+
+      \    a.networkpoint_ean,\r
+
+      \    a.shipper,\r
+
+      \    a.fallback,\r
+
+      \    a.measure_method,\r
+
+      \    a.user_category,\r
+
+      \    al.valid_from,\r
+
+      \    al.valid_to,\r
+
+      \    al.quantity,\r
+
+      \    al.is_reliable,\r
+
+      \    al.hs\r
+
+      \  FROM aps a\r
+
+      \  CROSS JOIN XMLTABLE(\r
+
+      \    XMLNAMESPACES(\r
+
+      \      DEFAULT 'urn:nedu:edsn:data:ballnotification:1:standard'\r
+
+      \    ),\r
+
+      \    'Allocation'\r
+
+      \    PASSING XMLTYPE(\r
+
+      \      XMLQUERY(\r
+
+      \        '/BALLNotificationEnvelope/Wholesale_Content/Connection[EANID=$e\
+      an]\r
+
+      \         /MarketParty[Shipper=$shipper]\r
+
+      \         /AllocationPropertySet[UserCategory=$uc]'\r
+
+      \        PASSING a.payload,\r
+
+      \                a.connection_ean AS \"ean\",\r
+
+      \                a.shipper AS \"shipper\",\r
+
+      \                a.user_category AS \"uc\"\r
+
+      \        RETURNING CONTENT\r
+
+      \      )\r
+
+      \    )\r
+
+      \    COLUMNS\r
+
+      \      valid_from  TIMESTAMP WITH TIME ZONE PATH 'ValidFrom',\r
+
+      \      valid_to    TIMESTAMP WITH TIME ZONE PATH 'ValidTo',\r
+
+      \      quantity    NUMBER                  PATH 'Quantity',\r
+
+      \      is_reliable CHAR(1)                 PATH 'IsReliable',\r
+
+      \      hs          NUMBER                  PATH 'Hs'\r
+
+      \  ) al\r
+
+      )\r
+
+      \r
+
+      SELECT\r
+
+      \  d.document_type,\r
+
+      \  h.creation_timestamp,\r
+
+      \  h.message_id,\r
+
+      \  h.receiver_id,\r
+
+      \  h.sender_id,\r
+
+      \  p.version               AS process_version,\r
+
+      \  a.connection_ean,\r
+
+      \  a.networkpoint_ean,\r
+
+      \  a.shipper,\r
+
+      \  a.user_category,\r
+
+      \  a.fallback,\r
+
+      \  a.measure_method,\r
+
+      \  a.valid_from,\r
+
+      \  a.valid_to,\r
+
+      \  a.quantity,\r
+
+      \  a.is_reliable,\r
+
+      \  a.hs\r
+
+      FROM doc d\r
+
+      JOIN header   h ON h.payload = d.payload\r
+
+      LEFT JOIN process p ON p.payload = d.payload\r
+
+      JOIN allocation a ON 1 = 1;"
+    languageId: oracle-sql
+  - kind: 1
+    value: REST Allocation
+    languageId: markdown
+  - kind: 2
+    value: "WITH t_message AS (\r
+
+      \  SELECT gmp.gmp_document AS xml\r
+
+      \  FROM   gdx_Data.gmp_gdx_message_payload gmp\r
+
+      \  WHERE  gmp.gmp_id = 1\r
+
+      )\r
+
+      SELECT\r
+
+      \    d.document_type,\r
+
+      \r
+
+      \    -- Header\r
+
+      \    h.creation_timestamp,\r
+
+      \    h.message_id,\r
+
+      \    h.receiver_ean_id,\r
+
+      \    h.sender_ean_id,\r
+
+      \r
+
+      \    -- Process\r
+
+      \    p.document_version,\r
+
+      \r
+
+      \    -- Connection\r
+
+      \    c.ean_id,\r
+
+      \r
+
+      \    -- MarketParty\r
+
+      \    mp.shipper_ean_id,\r
+
+      \r
+
+      \    -- -- AllocationPropertySet\r
+
+      \    -- aps.user_category,\r
+
+      \    -- aps.fallback,\r
+
+      \    -- aps.measure_method,\r
+
+      \r
+
+      \    -- -- Allocation level\r
+
+      \    -- al.valid_from,\r
+
+      \    -- al.valid_to,\r
+
+      \    -- al.quantity,\r
+
+      \    -- al.is_reliable,\r
+
+      \    -- al.hs,\r
+
+      \r
+
+      \    -- RestAllocation (if present)\r
+
+      \    ra.gas_month,\r
+
+      \    ra.rest_quantity,\r
+
+      \    ra.rest_hs\r
+
+      \r
+
+      FROM t_message t\r
+
+      \r
+
+      -- Identify document type (LALL/BALL/...)\r
+
+      CROSS JOIN XMLTABLE(\r
+
+      \  'local-name(/*)'\r
+
+      \  PASSING t.xml\r
+
+      \  COLUMNS document_type VARCHAR2(50) PATH '.'\r
+
+      ) d\r
+
+      \r
+
+      -- Header (namespace free)\r
+
+      CROSS JOIN XMLTABLE(\r
+
+      \  '/*[local-name()=\"LALLNotificationEnvelope\" or
+      local-name()=\"BALLNotificationEnvelope\"]\r
+
+      \     /*[local-name()=\"EDSNBusinessDocumentHeader\"]'\r
+
+      \  PASSING t.xml\r
+
+      \  COLUMNS\r
+
+      \    creation_timestamp TIMESTAMP WITH TIME ZONE PATH
+      '*[local-name()=\"CreationTimestamp\"]',\r
+
+      \    message_id         VARCHAR2(50) PATH
+      '*[local-name()=\"MessageID\"]',\r
+
+      \    receiver_ean_id    VARCHAR2(20) PATH
+      '*[local-name()=\"Destination\"]/*[local-name()=\"Receiver\"]/*[local-nam\
+      e()=\"ReceiverID\"]',\r
+
+      \    sender_ean_id      VARCHAR2(20) PATH
+      '*[local-name()=\"Source\"]/*[local-name()=\"SenderID\"]'\r
+
+      ) h\r
+
+      \r
+
+      -- Process\r
+
+      LEFT JOIN XMLTABLE(\r
+
+      \ 
+      '/*/*[local-name()=\"Wholesale_Content\"]/*[local-name()=\"Wholesale_Proc\
+      ess\"]'\r
+
+      \  PASSING t.xml\r
+
+      \  COLUMNS\r
+
+      \    document_version NUMBER PATH '*[local-name()=\"Version\"]'\r
+
+      ) p ON 1=1\r
+
+      \r
+
+      -- Connection (parent level)\r
+
+      LEFT JOIN XMLTABLE(\r
+
+      \ 
+      '/*/*[local-name()=\"Wholesale_Content\"]/*[local-name()=\"Connection\"]'\
+      \r
+
+      \  PASSING t.xml\r
+
+      \  COLUMNS\r
+
+      \    ean_id VARCHAR2(20) PATH '*[local-name()=\"EANID\"]',\r
+
+      \    connection_xml XMLTYPE PATH '.'\r
+
+      ) c ON 1=1\r
+
+      \r
+
+      -- MarketParty (child of Connection)\r
+
+      LEFT JOIN XMLTABLE(\r
+
+      \  '*[local-name()=\"MarketParty\"]'\r
+
+      \  PASSING c.connection_xml\r
+
+      \  COLUMNS\r
+
+      \    shipper_ean_id VARCHAR2(20) PATH '*[local-name()=\"Shipper\"]',\r
+
+      \    mp_xml XMLTYPE PATH '.'\r
+
+      ) mp ON 1=1\r
+
+      \r
+
+      -- -- AllocationPropertySet (child of MarketParty)\r
+
+      -- LEFT JOIN XMLTABLE(\r
+
+      --   '*[local-name()=\"AllocationPropertySet\"]'\r
+
+      --   PASSING mp.mp_xml\r
+
+      --   COLUMNS\r
+
+      --     user_category  VARCHAR2(10) PATH
+      '*[local-name()=\"UserCategory\"]',\r
+
+      --     fallback       VARCHAR2(5)  PATH '*[local-name()=\"Fallback\"]',\r
+
+      --     measure_method VARCHAR2(5)  PATH
+      '*[local-name()=\"MeasureMethod\"]',\r
+
+      --     aps_xml XMLTYPE PATH '.'\r
+
+      -- ) aps ON 1=1\r
+
+      \r
+
+      -- -- Allocation (child of APS)\r
+
+      -- LEFT JOIN XMLTABLE(\r
+
+      --   '*[local-name()=\"Allocation\"]'\r
+
+      --   PASSING aps.aps_xml\r
+
+      --   COLUMNS\r
+
+      --     valid_from  TIMESTAMP WITH TIME ZONE PATH
+      '*[local-name()=\"ValidFrom\"]',\r
+
+      --     valid_to    TIMESTAMP WITH TIME ZONE PATH
+      '*[local-name()=\"ValidTo\"]',\r
+
+      --     quantity    NUMBER PATH '*[local-name()=\"Quantity\"]',\r
+
+      --     is_reliable VARCHAR2(1) PATH '*[local-name()=\"IsReliable\"]',\r
+
+      --     hs          NUMBER PATH '*[local-name()=\"Hs\"]'\r
+
+      -- ) al ON 1=1\r
+
+      \r
+
+      -- RestAllocation (sibling of APS under MarketParty)\r
+
+      LEFT JOIN XMLTABLE(\r
+
+      \  '*[local-name()=\"RestAllocation\"]'\r
+
+      \  PASSING mp.mp_xml\r
+
+      \  COLUMNS\r
+
+      \    gas_month     VARCHAR2(6) PATH '*[local-name()=\"GasMonth\"]',\r
+
+      \    rest_quantity NUMBER PATH '*[local-name()=\"Quantity\"]',\r
+
+      \    rest_hs       NUMBER PATH '*[local-name()=\"Hs\"]'\r
+
+      ) ra ON 1=1;\r\n"
+    languageId: oracle-sql

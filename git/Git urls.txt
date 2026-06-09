@@ -1,0 +1,2 @@
+GIT
+  Branch Per Feature Guide - https://dev.acquia.com/blog/pragmatic-guide-branch-feature-git-branching-strategy

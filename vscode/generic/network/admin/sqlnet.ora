@@ -1,0 +1,15 @@
+# sqlnet.ora Network Configuration File
+#
+# This sqlnet.ora contains the location of your personal Oracle Wallet files.
+# It is an absolute path, but the PROJ_ROOT and USER variables have been
+# composed in <project_root>/config/database/<database_service>.config file
+#
+
+WALLET_LOCATION =
+   (SOURCE =
+     (METHOD = FILE)
+     (METHOD_DATA =
+       (DIRECTORY = %PROJ_ROOT%\..\generic\wallet\%USER%)
+     )
+    )
+SQLNET.WALLET_OVERRIDE = TRUE

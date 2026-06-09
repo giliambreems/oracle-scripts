@@ -1,0 +1,7 @@
+# Duplicate, but just to be sure anyone accidently removed it from main .gitignore
+# Ignore all config files in current folder, except .gitignore
+*.*
+passwords/*
+!database/*
+!env.*
+!.gitignore

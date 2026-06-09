@@ -1,0 +1,148 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "options": {
+    "shell": {
+      "executable": "C:\\Program Files\\Git\\bin\\bash.exe",
+      "args": ["--login","-c"]
+    }
+  },
+  /*"presentation": {
+    "echo": true,
+    "reveal": "always",
+    "focus": false,
+    "panel": "dedicated",
+    "showReuseMessage": false
+  },*/
+  "tasks": [
+    {
+      "label": "APEX: Export all APEX Applications",
+      "type": "shell",
+      "command": "./scripts/sqlcl/apex_export_all.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "APEX: Export APEX Application",
+      "type": "shell",
+      "command": "./scripts/sqlcl/apex_export.sh ${input:APEXAppId}",
+      "problemMatcher": []
+    },
+    {
+      "label": "APEX: Export Workspace Static Files",
+      "type": "shell",
+      "command": "./scripts/sqlcl/apex_export.sh wsf",
+      "problemMatcher": []
+    },
+    {
+      "label": "DB: Export Database Schema Object",
+      "type": "shell",
+      "command": "./scripts/sqlcl/schema_export.sh '${input:ObjectOwner}' '${input:ObjectType}' '${input:ObjectName}'",
+      "problemMatcher": []
+    },
+    {
+      "label": "APEX: Upload Static File",
+      "type": "shell",
+      "command": "./scripts/sqlcl/apex_upload_static_file.sh '${relativeFile}'",
+      "problemMatcher": []
+    },
+    {
+      "label": "APEX: Download Static File",
+      "type": "shell",
+      "command": "./scripts/sqlcl/apex_download_static_file.sh '${relativeFile}'",
+      "problemMatcher": []
+    },
+    {
+      "label": "DB: Open SQLcl",
+      "type": "shell",
+      "command": "./scripts/sqlcl/db_open_sqlcl.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "DB: Compile on Database (SQLcl)",
+      "type": "shell",
+      "command": "./scripts/sqlcl/run_with_sqlcl.sh '${relativeFile}'",
+      "problemMatcher": []
+    },
+    {
+      "label": "DB: Compile on Database (SQL*Plus)",
+      "type": "shell",
+      "command": "./scripts/sqlcl/run_with_sqlplus.sh '${relativeFile}'",
+      "problemMatcher": []
+    },
+    {
+      "label": "Local: Remove password files (*.pwd) from project files",
+      "type": "shell",
+      "command": "./scripts/sqlcl/remove_password_files.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "Local: Remove trailing whitespaces (staging changes only)",
+      "type": "shell",
+      "command": "git diff --cached --no-color ':!*.md' > stage.diff && git apply --index -R stage.diff && git apply --index --whitespace=fix stage.diff && rm -f stage.diff",
+      "problemMatcher": []
+    },
+    {
+      "label": "Local: Remove trailing whitespaces (working area changes)",
+      "type": "shell",
+      "command": "git status --porcelain ':!*.md' | awk '{print $2}' | xargs sed -i 's/[ \t]*$//'",
+      "problemMatcher": []
+    },
+    // {
+    //   "label": "Template CMD task",
+    //   "type": "shell",
+    //   "command": "script.cmd",
+    //   "args": [],
+    //   "problemMatcher": [],
+    //   "options": {
+    //     "shell": {
+    //       "executable": "C:\\Windows\\System32\\cmd.exe",
+    //       "args": ["/d", "/c"],
+    //     }
+    //   }
+    // },
+  ],
+  "inputs": [
+    {
+      "id": "APEXAppId",
+      "type": "promptString",
+      "description": "APEX Application ID",
+    },
+    {
+      "id": "ObjectType",
+      "type": "pickString",
+      "description": "The type of the object you want to export",
+      "options": [
+        "ALL",
+        "PACKAGE",
+        "PACKAGE BODY",
+        "VIEW",
+        "TRIGGER",
+        "TYPE",
+        "TYPE BODY",
+        "TABLE",
+        "SEQUENCE",
+        "SYNONYM",
+        "FUNCTION",
+        "PROCEDURE",
+        "DATABASE LINK",
+      ],
+    },
+    {
+      "id": "ObjectOwner",
+      "type": "pickString",
+      "description": "The owner of the object to export",
+      "options": [
+        "OMISKLU",
+        "OMIS$PRV",
+        "EBS",
+      ],
+      "default": "OMISKLU"
+    },
+    {
+      "id": "ObjectName",
+      "type": "promptString",
+      "description": "The name of the object you want to export",
+    },
+  ]
+}

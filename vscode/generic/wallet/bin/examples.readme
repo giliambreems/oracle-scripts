@@ -1,0 +1,47 @@
+#
+# Navigate into project folder root, f.e. c:\projects\<project_name>.
+#
+# The Oracle Wallet is located in the generic project to be able to share and use the wallet for various projects,
+# instead of having an Oracle Wallet for each project specific. That also applies to sqlnet.ora and tnsnames.ora
+#
+# Beware: Replace <connection_string>, <user>, <password> or <newpassword> tags with actual value
+#
+# Type in one of the following commands:
+#
+#
+# Create Personal Wallet
+#
+#   windows: ..\generic\wallet\bin\orapki.bat wallet create -wallet ..\generic\wallet\%username% -pwd welcome1 -auto_login_local
+#   linux:   ../generic/wallet/bin/orapki.sh wallet create -wallet ../generic/wallet/$(whoami) -pwd welcome1 -auto_login_local
+# 
+#
+# Create Credential in Wallet
+#
+#   windows: ..\generic\wallet\bin\mkstore.bat -wrl ..\generic\wallet\%username% -createCredential <connection_string> <user> <password>
+#   linux:   ../generic/wallet/bin/mkstore.sh -wrl ../generic/wallet/$(whoami) -createCredential <connection_string> <user> <password>
+#
+# 
+# Modify Credential in Wallet
+#
+#   windows: ..\generic\wallet\bin\mkstore.bat -wrl ..\generic\wallet\%username% -modifyCredential <connection_string> <user> <newpassword>
+#   linux:   ../generic/wallet/bin/mkstore.sh -wrl ../generic/wallet/$(whoami) -modifyCredential <connection_string> <user> <newpassword>
+#
+# 
+# Delete Credential from Wallet
+#
+#   windows: ..\generic\wallet\bin\mkstore.bat -wrl ..\generic\wallet\%username% -deleteCredential <connection_string>
+#   linux:   ../generic/wallet/bin/mkstore.sh -wrl ../generic/wallet/$(whoami) -deleteCredential <connection_string>
+#
+# 
+# Show Personal Wallet Credentials
+#
+#   windows: ..\generic\wallet\bin\mkstore.bat -wrl ..\generic\wallet\%username% -listCredential
+#   linux:   ../generic/wallet/bin/mkstore.sh -wrl ../generic/wallet/$(whoami) -listCredential
+# 
+
+
+mkstore -wrl ../generic/wallet/${USER} -createCredential connection_string user password
+mkstore -wrl ../generic/wallet/${USER} -modifyCredential connection_string user newpassword
+mkstore -wrl ../generic/wallet/${USER} -deleteCredential connection_string 
+mkstore -wrl ../generic/wallet/${USER} -listCredential
+

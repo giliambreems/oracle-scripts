@@ -1,0 +1,23 @@
+# Create Oracle net service names, or aliases, for each database server 
+# you need to connect to.
+#
+# This tnsnames.ora contains the databases for use in combination with Oracle Wallet authentication.
+# Therefore a database connection string is composed as <service>_<user> where the database/service
+# might actually be a duplicate of another database, just to be able to connect with it by another user.
+#
+#   ex: alias = <database_service_name>_<user>
+#
+# tnsnames.ora sample entry
+#
+# alias =
+#  (DESCRIPTION =
+#    (ADDRESS_LIST =
+#      (ADDRESS = (PROTOCOL = TCP)(HOST = myserver.mycompany.com)(PORT = 1521))
+#    )
+#    (CONNECT_DATA =
+#      (SERVER = DEDICATED)
+#      (SERVICE_NAME = orcl)
+#    )
+#  )
+#
+
