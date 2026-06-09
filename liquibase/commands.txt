@@ -1,0 +1,15 @@
+-- ENV 1
+--
+-- Everything did already run correctly, mark the new changesets as ran
+--liquibase clear-checksums
+--liquibase changelog-sync -changelog-file releases/main.changelog.xml
+
+--
+-- ENV 2
+--
+-- Mark the next changeset (=failed) as ran
+--liquibase mark-next-changeset-ran -changelog-file releases/main.changelog.xml
+--liquibase clear-checksums
+--
+-- Then run installer to continue from there..
+--@@install.sql
