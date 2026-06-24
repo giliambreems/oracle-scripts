@@ -108,12 +108,24 @@ try {
   // We scan the current lines from the bottom of the file going upwards.
   // ============================================================================
   let lastIncludeIndex = -1;
+  let previousMergeCount = 0;
+
   for (let i = currentLines.length - 1; i >= 0; i--) {
-    if (currentLines[i].trim().startsWith('<include')) {
+    const lineTrimmed = currentLines[i].trim();
+
+    // Find the anchor line index
+    if (lastIncludeIndex === -1 && lineTrimmed.startsWith('<include')) {
       lastIncludeIndex = i;
-      break; // Found the last one! Stop looking.
+    }
+
+    // Scan backwards to see how many merge comments already exist in the file history
+    if (lineTrimmed.includes('Added by liquibase-merge.js')) {
+      previousMergeCount++;
     }
   }
+
+  // Determine the next sequence number (e.g., if 0 exist, this is sequence 1)
+  const nextSequenceNumber = previousMergeCount + 1;
 
   // ============================================================================
   // 5. SAFETY NET: UNTOUCHED MANIFEST MANIPULATION
@@ -138,11 +150,14 @@ try {
   // This guarantees that Develop's current sequence, order, and history are completely frozen.
   const mergedLines = currentLines.slice(0, lastIncludeIndex + 1);
 
-  // Phase B: Take the uniquely isolated incoming features and force-append them beneath the anchor.
-  // We prefix each line with 4 spaces to preserve Liquibase XML visual formatting.
-  newIncludes.forEach(line => {
-    mergedLines.push(`    ${line}`);
-  });
+  // Phase B: Force-append the uniquely isolated incoming features.
+  // We postfix each line with a sequence comment to preserve Liquibase XML visual formatting.
+  if (newIncludes.length > 0) {
+    newIncludes.forEach(line => {
+      // Inline formatting combines the line content, and the sequence comment trailing at the end
+      mergedLines.push(`${line}    <!-- ${nextSequenceNumber}. Added by liquibase-merge.js -->`);
+    });
+  }
 
   // Phase C: Append the closing structural tag to properly terminate the XML document structure.
   mergedLines.push('</databaseChangeLog>');
