@@ -30,7 +30,7 @@ Username is always treated as a quoted Oracle identifier. The supplied casing is
 Optional proxy schema (for example RELEASE).
 
 .PARAMETER Password
-Password for the Oracle user.
+Optional password for the Oracle user.
 
 .PARAMETER ConnectDescriptor
 Optional complete connection descriptor.
@@ -113,7 +113,7 @@ function New-OracleConnectionString {
 
         [string]$ProxySchema,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$false)]
         [string]$Password,
 
         # Complete connection descriptor.
@@ -181,5 +181,12 @@ function New-OracleConnectionString {
         }
     }
 
-    return "$userPart/$Password@$ConnectDescriptor"
+    $passwordPart = if ([string]::IsNullOrWhiteSpace($Password)) {
+        ""
+    }
+    else {
+        "/$Password"
+    }
+
+    return "$userPart$passwordPart@$ConnectDescriptor"
 }
