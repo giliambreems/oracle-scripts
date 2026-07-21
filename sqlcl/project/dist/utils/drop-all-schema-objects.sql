@@ -65,42 +65,14 @@ prompt
 
 set feedback on pagesize 50 linesize 150 heading on
 
--- Drop all records in Liquibase tables for schemas &schemas
+-- 1. Drop all records in Liquibase tables for schemas &schemas
 prompt Drop all records in Liquibase tables for schemas &schemas
 delete from fp_release.databasechangelog cl where upper(cl.author) in (select upper(trim(regexp_substr(:p_schemas, '[^,]+', 1, level))) from dual connect by level <= regexp_count(:p_schemas, ',') + 1);
 delete from fp_release.databasechangelog_actions cla where upper(cla.author) in (select upper(trim(regexp_substr(:p_schemas, '[^,]+', 1, level))) from dual connect by level <= regexp_count(:p_schemas, ',') + 1);
 commit;
 
--- Drop all objects
-prompt Drop all objects from schemas &schemas
-declare
-  cursor c
-  is
-    select o.object_type, o.owner, o.object_name
-    from   all_objects o
-    where  upper(o.owner) in (select upper(trim(regexp_substr(:p_schemas, '[^,]+', 1, level))) from dual connect by level <= regexp_count(:p_schemas, ',') + 1)
-    and    o.object_type in ('TABLE','PACKAGE','PACKAGE BODY','SEQUENCE','VIEW','SYNONYM','FUNCTION','PROCEDURE','TYPE','DATABASE LINK');
 
-  l_stmt varchar2(4000);
-
-  e_object_not_exists exception;
-  pragma EXCEPTION_INIT( e_object_not_exists, -4043 );
-begin
-  for r in c loop
-    begin
-      l_stmt := apex_string.format('DROP %s %s.%s %s', r.object_type, dbms_assert.enquote_name(r.owner), dbms_assert.enquote_name(r.object_name), case r.object_type when 'TABLE' then 'CASCADE CONSTRAINTS PURGE' else null end);
-      dbms_output.put_line( l_stmt );
-
-      execute immediate l_stmt;
-    exception
-        when e_object_not_exists then
-          null; --ignore error
-    end;
-  end loop;
-end;
-/
-
--- Drop all scheduler jobs
+-- 2. Drop all scheduler jobs
 prompt Drop all scheduler jobs
 declare
   cursor c_scheduler_jobs
@@ -132,7 +104,7 @@ begin
 end;
 /
 
--- Drop all queues and queue tables
+-- 3. Drop all queues and queue tables
 prompt Drop all queues and queue tables from schema &schemas
 declare
   cursor c_queues
@@ -180,6 +152,35 @@ begin
 
       -- Drop the Queue Table
       l_stmt := apex_string.format('begin sys.dbms_aqadm.drop_queue_table( queue_table => ''%s.%s''); end;', dbms_assert.enquote_name(r.owner), dbms_assert.enquote_name(r.queue_table));
+      dbms_output.put_line( l_stmt );
+
+      execute immediate l_stmt;
+    exception
+        when e_object_not_exists then
+          null; --ignore error
+    end;
+  end loop;
+end;
+/
+
+-- 4. Drop all remaining objects
+prompt Drop all objects from schemas &schemas
+declare
+  cursor c
+  is
+    select o.object_type, o.owner, o.object_name
+    from   all_objects o
+    where  upper(o.owner) in (select upper(trim(regexp_substr(:p_schemas, '[^,]+', 1, level))) from dual connect by level <= regexp_count(:p_schemas, ',') + 1)
+    and    o.object_type in ('TABLE','PACKAGE','PACKAGE BODY','SEQUENCE','VIEW','SYNONYM','FUNCTION','PROCEDURE','TYPE','DATABASE LINK');
+
+  l_stmt varchar2(4000);
+
+  e_object_not_exists exception;
+  pragma EXCEPTION_INIT( e_object_not_exists, -4043 );
+begin
+  for r in c loop
+    begin
+      l_stmt := apex_string.format('DROP %s %s.%s %s', r.object_type, dbms_assert.enquote_name(r.owner), dbms_assert.enquote_name(r.object_name), case r.object_type when 'TABLE' then 'CASCADE CONSTRAINTS PURGE' else null end);
       dbms_output.put_line( l_stmt );
 
       execute immediate l_stmt;
