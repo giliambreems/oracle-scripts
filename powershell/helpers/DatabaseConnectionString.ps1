@@ -103,6 +103,18 @@ New-OracleConnectionString `
 Returns:
 
 "USER.NAME"/secret@//localhost:1521/FREEPDB1
+
+
+# -----------------------------------------------------------------------------
+# Revision History
+# -----------------------------------------------------------------------------
+#
+# Date         Author           Description
+# ----------   ---------------  -----------------------------------------------
+# 2026-07-18   Giliam Breems    Initial implementation.
+#
+# -----------------------------------------------------------------------------
+
 #>
 
 function New-OracleConnectionString {
@@ -113,7 +125,6 @@ function New-OracleConnectionString {
 
         [string]$ProxySchema,
 
-        [Parameter(Mandatory=$false)]
         [string]$Password,
 
         # Complete connection descriptor.
@@ -147,11 +158,20 @@ function New-OracleConnectionString {
 
     $quotedUser = "`"$Username`""
 
+    # Build the user part of the connection string, including optional proxy schema.
     $userPart = if ([string]::IsNullOrWhiteSpace($ProxySchema)) {
         $quotedUser
     }
     else {
         "$quotedUser[$ProxySchema]"
+    }
+
+    # Build the password part of the connection string, including optional password.
+    $passwordPart = if ([string]::IsNullOrWhiteSpace($Password)) {
+        ""
+    }
+    else {
+        "/$Password"
     }
 
     if ($PSCmdlet.ParameterSetName -eq 'Components') {
@@ -179,13 +199,6 @@ function New-OracleConnectionString {
         else {
             "$HostName`:$Port/$ServiceName"
         }
-    }
-
-    $passwordPart = if ([string]::IsNullOrWhiteSpace($Password)) {
-        ""
-    }
-    else {
-        "/$Password"
     }
 
     return "$userPart$passwordPart@$ConnectDescriptor"
