@@ -1,5 +1,5 @@
 -- Blocking Objects and Sessions
-select 
+select
    b.sid,
    b.serial#,
    nvl(b.username, '(oracle)') AS username,
@@ -40,7 +40,7 @@ from
 where
    s.sql_id = :sql_id;
 
-   
+
 -- Active Sessions
 SELECT s.inst_id,
        s.sid,
@@ -107,4 +107,24 @@ and
    b.prev_exec_start + (1/24/60*5) < sysdate
 order by
    1, 2, 3, 4, 5;
+/
+
+
+-- Locked objects (with or without session)
+select
+   c.owner object_owner,
+   c.object_name,
+   c.object_type,
+   decode(a.locked_mode, 0, a.locked_mode || ' / ' || 'None',
+                         1, a.locked_mode || ' / ' || 'Null (NULL)',
+                         2, a.locked_mode || ' / ' || 'Row-S (SS)',
+                         3, a.locked_mode || ' / ' || 'Row-X (SX)',
+                         4, a.locked_mode || ' / ' || 'Share (S)',
+                         5, a.locked_mode || ' / ' || 'S/Row-X (SSX)',
+                         6, a.locked_mode || ' / ' || 'Exclusive (X)',
+                         a.locked_mode) locked_mode
+from
+   v$locked_object a
+join
+   dba_objects c on c.object_id = a.object_id
 /
