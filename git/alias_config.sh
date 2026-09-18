@@ -12,3 +12,4 @@ git config --global alias.code "co develop"
 git config --global alias.unstage 'reset HEAD --'
 git config --global alias.last 'log -1 HEAD'
 git config --global alias.update-develop "! git co develop ; git pull"
+git config --global alias.publish '!git push --set-upstream origin "$(git branch --show-current)"'
