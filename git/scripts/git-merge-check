@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Best Practice: Exit immediately if a command exits with a non-zero status
+set -e
+
+# 1. Validation: Check if a branch name was provided
+if [ -z "$1" ]; then
+    echo "No branch specified." >&2
+    echo "  Usage: git merge-check <branch_name>" >&2
+    exit 1
+fi
+
+BRANCH_NAME="$1"
+
+# 2. Validation: Check if the working directory is clean
+if ! git diff-index --quiet HEAD --; then
+    echo "You have uncommitted changes. Please commit or stash them first." >&2
+    exit 1
+fi
+
+echo "Starting dry-run merge of '$BRANCH_NAME'..."
+
+# Best Practice: Force Git to use 'true' (auto-accept) as editor for this session.
+# This prevents VS Code from opening and triggering the database IO error.
+export GIT_EDITOR="true"
+
+# 3. Perform the merge (catch fatal Git errors via '|| true')
+git merge --no-edit --no-commit "$BRANCH_NAME" || true
+
+# 4. Check for conflicts using the official Git filter (U = Unmerged/Conflicted)
+CONFLICTS=$(git diff --name-only --diff-filter=U)
+
+if [ -n "$CONFLICTS" ]; then
+    echo ""
+    echo "Warning: Merge conflicts detected!"
+    echo ""
+    echo "The merge is kept open. Please resolve the conflicts in the following files:"
+    echo "$CONFLICTS"
+    echo ""
+    echo "Once resolved, finalize with: git merge --continue"
+    exit 0
+else
+    echo ""
+    echo "No conflicts found."
+    echo "Aborting merge as requested..."
+    git merge --abort
+    echo "Status: Branch is fully clean."
+    exit 0
+fi

@@ -13,3 +13,7 @@ git config --global alias.unstage 'reset HEAD --'
 git config --global alias.last 'log -1 HEAD'
 git config --global alias.update-develop "! git co develop ; git pull"
 git config --global alias.publish '!git push --set-upstream origin "$(git branch --show-current)"'
+
+git config --global alias.merge-ne "merge --no-edit"
+git config --global alias.merge-ne-nc "merge --no-edit --no-commit"
+git config --global alias.merge-check "!bash ~/Documents/git/oracle-scripts/git/scripts/git-merge-check"
