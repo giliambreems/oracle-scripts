@@ -24,13 +24,25 @@ echo "Starting dry-run merge of '$BRANCH_NAME'..."
 # This prevents VS Code from opening and triggering the database IO error.
 export GIT_EDITOR="true"
 
-# 3. Perform the merge (catch fatal Git errors via '|| true')
-git merge --no-edit --no-commit "$BRANCH_NAME" || true
+# 3. Perform the merge and capture the exit code safely
+set +e # Temporarily allow commands to fail so we can check the exit code
+git merge --no-edit --no-commit "$BRANCH_NAME"
+MERGE_STATUS=$?
+set -e # Re-enable 'exit on error'
 
-# 4. Check for conflicts using the official Git filter (U = Unmerged/Conflicted)
-CONFLICTS=$(git diff --name-only --diff-filter=U)
+# 4. Handle the result based on the exit code
+if [ $MERGE_STATUS -eq 0 ]; then
+    # Exit code 0 means clean merge. Since we used --no-commit, we abort it now.
+    echo ""
+    echo "No conflicts found."
+    echo "Aborting merge as requested..."
+    git merge --abort
+    echo "Status: Branch is fully clean."
+    exit 0
 
-if [ -n "$CONFLICTS" ]; then
+elif [ $MERGE_STATUS -eq 1 ] || [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+    # Exit code 1 (or remaining unmerged files) means there are conflicts to resolve
+    CONFLICTS=$(git diff --name-only --diff-filter=U)
     echo ""
     echo "Warning: Merge conflicts detected!"
     echo ""
@@ -39,11 +51,10 @@ if [ -n "$CONFLICTS" ]; then
     echo ""
     echo "Once resolved, finalize with: git merge --continue"
     exit 0
+
 else
+    # Any other exit code means a real Git fatal error occurred (e.g. branch not found)
     echo ""
-    echo "No conflicts found."
-    echo "Aborting merge as requested..."
-    git merge --abort
-    echo "Status: Branch is fully clean."
-    exit 0
+    echo "Error: Git encountered a fatal error during the merge attempt." >&2
+    exit $MERGE_STATUS
 fi
