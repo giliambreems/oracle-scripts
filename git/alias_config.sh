@@ -17,3 +17,5 @@ git config --global alias.publish '!git push --set-upstream origin "$(git branch
 git config --global alias.merge-ne "merge --no-edit"
 git config --global alias.merge-ne-nc "merge --no-edit --no-commit"
 git config --global alias.merge-check "!bash ~/Documents/git/oracle-scripts/git/scripts/git-merge-check"
+
+git config --global alias.sync '!f() { git fetch origin "$1:$1"; }; f'
